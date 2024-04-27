@@ -14,6 +14,7 @@ def distance_to_line_along_local_y(point, p1, p2):
     local_y_axis = define_local_y_axis(p1, p2)
     point_vector = np.array(point) - np.array(p1)
     point_vector[2] = 0  # Ignore the Z component
+    # Project the point vector onto the local Y-axis
     projection_length = np.dot(point_vector, local_y_axis)
     return abs(projection_length)
 
@@ -34,3 +35,18 @@ def is_near_boundary_and_within_edge(point_distances, scaled_threshold):
             if is_point_within_edge(entry['lidar_point'], entry['edge_coordinates']):
                 return True
     return False
+
+def extract_top_edges(frustums):
+    """Extract the top edges of the frustums"""
+    top_edges = {}
+    for camera, points in frustums.items():
+        top_edges[camera] = [
+            (points[0], points[4]),
+            (points[1], points[5])
+        ]
+    return top_edges
+
+def define_line(p1, p2):
+    """Create a parametric line function from two points."""
+    direction = p2 - p1  # The direction vector from p1 to p2
+    return lambda t: p1 + t * direction
